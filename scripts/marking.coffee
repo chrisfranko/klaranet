@@ -30,7 +30,7 @@ db = new sqlite3.Database('tips');
 
 credits  = {} # simple key value store or URI / balance for now
 symbol   = '₣'
-last     = 'klaranet'
+last     = 'thegiver'
 secret   = process.env.HUBOT_DEPOSIT_SECRET
 if process.env.HUBOT_ADAPTER is 'irc'
   adapter = 'irc'
