@@ -1,22 +1,22 @@
 # Description:
-#   Give and List User Marks
+#   Give and List User Tips
 #
 # Dependencies:
-#   bitmarkd must be running
-#   bitmark-cli must be in path
+#   frankod must be running
+#   frankod must be in path
 #   wallet must be funded
 #
 # Configuration:
 #   None
 #
 # Commands:
-#   mark     <user> <amount>          - mark user amount
+#   tip     <user> <amount>          - tip user amount
 #   withdraw <address> <amount>       - withdraw to address amount
 #   balance  <user>                   - balance for a user
-#   +1                                - one mark to the last user
+#   +1                                - one FRK to the last user
 #
 # Author:
-#   bitmark team
+#   franko team
 #
 
 
@@ -26,10 +26,10 @@ sqlite3 = require('sqlite3').verbose();
 
 
 # init
-db = new sqlite3.Database('marks');
+db = new sqlite3.Database('tips');
 
 credits  = {} # simple key value store or URI / balance for now
-symbol   = '₥'
+symbol   = '₣'
 last     = 'klaranet'
 secret   = process.env.HUBOT_DEPOSIT_SECRET
 if process.env.HUBOT_ADAPTER is 'irc'
@@ -84,7 +84,7 @@ transfer_credits = (msg, URI, amount, robot) ->
 
 withdraw_credits = (msg, address, amount, robot) ->
   if robot.brain.data.credits[to_URI(msg.message.user.name)] >= parseFloat(amount)
-    command = 'bitmark-cli sendtoaddress ' + address + ' ' + ( parseFloat(amount) / 1000.0 )
+    command = 'frankod sendtoaddress ' + address + ' ' + ( parseFloat(amount) / 1000.0 )
     console.log(command)
     exec command, (error, stdout, stderr) ->
       console.log(error)
@@ -114,11 +114,11 @@ module.exports = (robot) ->
       save(robot)
         
   # TRANSFER
-  robot.hear /^(transfer|mark)\s+@?([\w\S]+)\s*(\d+)\s*$/i, (msg) ->
+  robot.hear /^(transfer|tip)\s+@?([\w\S]+)\s*(\d+)\s*$/i, (msg) ->
     transfer_credits(msg, to_URI(msg.match[2]), msg.match[3], robot)
     save(robot)
 
-  robot.hear /^(transfer|mark)\s+@?([\w\S]+)\s*$/i, (msg) ->
+  robot.hear /^(transfer|tip)\s+@?([\w\S]+)\s*$/i, (msg) ->
     transfer_credits(msg, to_URI(msg.match[2]), 1, robot)
     save(robot)
 
@@ -133,8 +133,8 @@ module.exports = (robot) ->
   # WITHDRAW
   robot.hear /withdraw\s+([\w\S]+)\s+(\d+)\s*$/i, (msg) ->
     destination = msg.match[1]
-    if destination is 'foundation'
-      destination = 'bQmnzVS5M4bBdZqBTuHrjnzxHS6oSUz6cG'
+    if destination is 'collective'
+      destination = 'FEwQZFFjgyETKaZpQ8cz3aWsG1qDNXt3zM'
     withdraw_credits(msg, destination, msg.match[2], robot)
     save(robot)
     
@@ -156,7 +156,7 @@ module.exports = (robot) ->
 
   # WEB
   
-  robot.router.get "/marks", (req, res) ->
+  robot.router.get "/tips", (req, res) ->
     res.end JSON.stringify(robot.brain.data.credits)
     
   # LISTEN
